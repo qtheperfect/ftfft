@@ -1,0 +1,2 @@
+# Debug folder is created
+  The compiled files are supposed to be stored here, including the *.o files and the .exe files, as indicated in the Makefile script.
