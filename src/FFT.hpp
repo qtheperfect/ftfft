@@ -15,40 +15,8 @@ public:
   FFT(int lenExp): FT<F>(lenExp){}
   FFT(std::vector<F> xs): FT<F>(xs){};
   FFT(const FT<F>& ft): FFT(ft.xs){};
-  static void branchSum(F* start, Int step, Int length, F phiPow, F* result, F* cache) {
-    if (length == 1) {
-      *result = *start;
-      return;
-    }
-    else if (length == 0) {
-      return;
-    }
-    else {
-      F *cache1 = cache, *cache2 = cache + (length / 2);
-      branchSum(start, step + step, length/2, phiPow * phiPow, cache1, result);
-      branchSum(start + step, step + step, length/2, phiPow * phiPow, cache2, result);
-      F phi = Field<F>::one;
-      for (Int s = 0; s < length / 2; ++s) {
-	result[s] = cache1[s] + phi * cache2[s];
-	result[s + length / 2] = cache1[s] - phi * cache2[s];
-	phi = phi * phiPow;
-      }
-    }
-  }
-  std::vector<F> trans(bool rev = false) const {
-    using namespace std;
-
-    F source[len], result[len], cache[len];
-    F denom = rev ? len : Field<F>::one;
-    copy(xs.begin(), xs.end(), source);
-    F phi = rev? Field<F>::one / this->phi : this->phi;
-    branchSum(source, 1, len, phi, result, cache);
-    std::vector<F> outcome(len);
-    for (Int t = 0; t < len; ++t) {
-      outcome[t] = (result[t] / denom);
-    }
-    return outcome;
-  }
+  static void branchSum(F* start, Int step, Int length, F phiPow, F* result, F* cache); 
+  std::vector<F> trans(bool rev = false ) const; 
 
   static std::vector<F> testInput;
   static void test() {
@@ -75,5 +43,46 @@ public:
   }
 };
 
+
+
+template <typename F>
+void FFT<F>::branchSum(F* start, Int step, Int length, F phiPow, F* result, F* cache) {
+  if (length == 1) {
+    *result = *start;
+    return;
+  }
+  else if (length == 0) {
+    return;
+  }
+  else {
+    F *cache1 = cache, *cache2 = cache + (length / 2);
+    branchSum(start, step + step, length/2, phiPow * phiPow, cache1, result);
+    branchSum(start + step, step + step, length/2, phiPow * phiPow, cache2, result);
+    F phi = Field<F>::one;
+    for (Int s = 0; s < length / 2; ++s) {
+      result[s] = cache1[s] + phi * cache2[s];
+      result[s + length / 2] = cache1[s] - phi * cache2[s];
+      phi = phi * phiPow;
+    }
+  }
+}
+
+//template <typename F> std::vector<F> FFT<F>::trans() const  {return trans(false);}
+
+template <typename F>
+std::vector<F> FFT<F>::trans(bool rev) const {
+  using namespace std;
+
+  F source[len], result[len], cache[len];
+  F denom = rev ? len : Field<F>::one;
+  copy(xs.begin(), xs.end(), source);
+  F phi = rev? Field<F>::one / this->phi : this->phi;
+  branchSum(source, 1, len, phi, result, cache);
+  std::vector<F> outcome(len);
+  for (Int t = 0; t < len; ++t) {
+    outcome[t] = (result[t] / denom);
+  }
+  return outcome;
+}
 
 #endif

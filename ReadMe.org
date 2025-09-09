@@ -1,17 +1,23 @@
 #+TITLE: FT and FFT Algorithms on Various Number Fields
 
 * Introduction:
+
 A C++ project for the illustration of the Fourier Transformations(FT) and Fast Fourier Transformations(FFT) on different number fields, with the inverse transformations presented, primarily on the complex-number and prime-modular fields.
+
 * About the FFT
+
 ** Presumptions:
 
 - Inputs: \( x = x(0), x(1) ... x(N - 1) \) *where \( N = 2^n \)*
 - Outputs: \( y = y(0), y(1) ... y(N - 1) \)
-- The cyclic generator of order	\( N \): \( \phi: \phi^N = 1 \) where in the complex field: \( \phi = \exp(-2\pi i / N) \). Since *in any field*: \[ 0 = \phi^N - 1 = (\phi^{\frac{N}{2}} + 1)(\phi^{\frac{N}{2}} - 1) \] which proves that _\( \phi^{\frac{N}{2}} = -1 \)_
+- The cyclic generator of order	\( N \): \( \phi: \phi^N = 1 \)
+  where in the complex field: \( \phi = \exp(-2\pi i / N) \).
+  Since *in any field*: \[ 0 = \phi^N - 1 = (\phi^{\frac{N}{2}} + 1)(\phi^{\frac{N}{2}} - 1) \]
+   which proves that _\( \phi^{\frac{N}{2}} = -1 \)_
 - Formula:
-  \[ y = \Phi x \]
-  i.e.
   \[ y(s) = \sum_t \phi^{st} x(t) \]
+  i.e.
+  \[ y = \Phi x \]
 
 
 ** The FFT Steps:
