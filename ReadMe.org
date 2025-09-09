@@ -1,7 +1,7 @@
-#+TITLE: FT and FFT Algorithm on Different Number Fields
+#+TITLE: FT and FFT Algorithms on Various Number Fields
 
 * Introduction:
-A C++ project for the illustration of the Fourier Transformation and Fast Fourier Transformations in different number fields, with the revert transformation presented, primarily on the complex number and prime-modular fields.
+A C++ project for the illustration of the Fourier Transformations(FT) and Fast Fourier Transformations(FFT) on different number fields, with the inverse transformations presented, primarily on the complex-number and prime-modular fields.
 * About the FFT
 ** Presumptions:
 
@@ -38,15 +38,15 @@ Totally \( O(\log_2 N) \) recursive steps are required to get the final transfor
 * About the fields
 ** Fields in the code
 - Complex field: The cyclic generator is \( \phi = \exp(-2\pi i / N) \).
-- Prime Modular Field: When \( p \) is prime, the Field is of size \( p - 1 \).
+- Prime Modular Field: When \( p \) is prime, its modular finite Field is of size \( p - 1 \).
   If \( p = q \cdot 2^k + 1 \), the field will have a cyclic sub-group of size \( 2^k \).
 
-** Fields as template singleton classes
+** Field properties as C++ template singleton classes
 
 Assuming that the field is presented by the C++ datatype ~F~, The ~Field<F>~ privides basic field properties:
 #+begin_src C++
-  F Field<F>::one;  // 1+0i for complex field.
-  F Field<F>::zero; // 0+0i for complex field.
+  static F Field<F>::one;  // 1+0i for complex field.
+  static F Field<F>::zero; // 0+0i for complex field.
 
    // Returns the len-order cyclic generator. len should be a power of 2 
   F Field<F>::get_phi(Int len); 
@@ -57,9 +57,9 @@ Transformation classes, i/o-puts, test data and functions:
 
 #+begin_src C++
   class FT<F> { // Plain Fourier transformaitons
-    vector<F> xs;
-    vector<F> ys;
-    void trans();
+    vector<F> xs; // Inputs
+    vector<F> ys; // Outputs
+    void trans(); // Fill the outputs
   };
 
   class FFT<F> : public FT<F> { // Fast FT
@@ -68,7 +68,7 @@ Transformation classes, i/o-puts, test data and functions:
     // getting the partial sum of input xs from `start` by `step` of length `length`, transformed with parameter `phiPow`.
     // Before writing the result to `result`, the outcome of further recursions should be written to `cache` first. 
     static void branchSum(F* start, Int step, Int length, F phiPow, F* result, F* cache);
-    static vector<F> testInput;
+    static vector<F> testInput; // Input used by the test()
     static void test();
   }
 #+end_src
