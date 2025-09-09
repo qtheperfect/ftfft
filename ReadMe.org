@@ -1,0 +1,82 @@
+#+TITLE: FT and FFT Algorithm on Different Number Fields
+
+* Introduction:
+A C++ project for the illustration of the Fourier Transformation and Fast Fourier Transformations in different number fields, with the revert transformation presented, primarily on the complex number and prime-modular fields.
+* About the FFT
+** Presumptions:
+
+- Inputs: \( x = x(0), x(1) ... x(N - 1) \) *where \( N = 2^n \)*
+- Outputs: \( y = y(0), y(1) ... y(N - 1) \)
+- The cyclic generator of order	\( N \): \( \phi: \phi^N = 1 \) where in the complex field: \( \phi = \exp(-2\pi i / N) \). Since *in any field*: \[ 0 = \phi^N - 1 = (\phi^{\frac{N}{2}} + 1)(\phi^{\frac{N}{2}} - 1) \] which proves that _\( \phi^{\frac{N}{2}} = -1 \)_
+- Formula:
+  \[ y = \Phi x \]
+  i.e.
+  \[ y(s) = \sum_t \phi^{st} x(t) \]
+
+
+** The FFT Steps:
+
+The original Fourier transformation for the input \( x \) can be _split into the sum of the even and odd items_:
+\[ y(s) = \sum_{\tau} \phi^{2\tau \cdot s}x(2\tau)  + \sum_{\tau} \phi^{(2\tau + 1) \cdot s} x(2\tau + 1)\]
+
+When \( N \) is even, \( (\phi^2)^{N/2} = 1 \). Assume that the partial Fourier Transformation of all the *even* items are calculated with the cyclic generator \( \phi^2 \):
+\[ y_0(s) = \sum_{\tau} \phi^{2\tau \cdot s} x(2\tau) \]
+
+Likewisely, assume that the Fourier Transform of all the *odd* items are calculated with the cyclic generator \( \phi^2 \):
+\[ y_1(s) = \sum_{\tau} \phi^{2\tau \cdot s} x(2\tau + 1)\]
+
+Then, when \( N \) is even, for any \( s < N/2 \):
+\[ y(s) = y_0(s) + \phi^s y_1(s) \]
+\[ y(s + \frac{N}{2}) = y_0(s) - \phi^s y_1(s)  \]
+
+The consumption for the items of \( y \) is \( O(N) \) _rather than \( O(N^2) \)_.
+
+The partial transformations \( y_0(s) \) and \( y_1(s) \) can be calculated recursively in further steps, given that _\( N/2 \) is still even_ before reaching \( 1 \).
+
+Totally \( O(\log_2 N) \) recursive steps are required to get the final transformation, so the total calculation is \( N\log_2N \), which still prevails \( O(N^2) \)
+  
+* About the fields
+** Fields in the code
+- Complex field: The cyclic generator is \( \phi = \exp(-2\pi i / N) \).
+- Prime Modular Field: When \( p \) is prime, the Field is of size \( p - 1 \).
+  If \( p = q \cdot 2^k + 1 \), the field will have a cyclic sub-group of size \( 2^k \).
+
+** Fields as template singleton classes
+
+Assuming that the field is presented by the C++ datatype ~F~, The ~Field<F>~ privides basic field properties:
+#+begin_src C++
+  F Field<F>::one;  // 1+0i for complex field.
+  F Field<F>::zero; // 0+0i for complex field.
+
+   // Returns the len-order cyclic generator. len should be a power of 2 
+  F Field<F>::get_phi(Int len); 
+#+end_src
+The data ~F~ should be applicated with =operators +, -, *, /, ostream<<=
+
+Transformation classes, i/o-puts, test data and functions:
+
+#+begin_src C++
+  class FT<F> { // Plain Fourier transformaitons
+    vector<F> xs;
+    vector<F> ys;
+    void trans();
+  };
+
+  class FFT<F> : public FT<F> { // Fast FT
+    override void trans();
+    // which requires the recursive function below, 
+    // getting the partial sum of input xs from `start` by `step` of length `length`, transformed with parameter `phiPow`.
+    // Before writing the result to `result`, the outcome of further recursions should be written to `cache` first. 
+    static void branchSum(F* start, Int step, Int length, F phiPow, F* result, F* cache);
+    static vector<F> testInput;
+    static void test();
+  }
+#+end_src
+
+* Author and Copyright
+ 
+
+| Author     | Linghuei Guo          |
+| Email      | guolh2013@hotmail.com |
+| PGP        | 6819D81B0971C2C4      |
+| Permission | All Rights Reserved   |
