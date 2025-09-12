@@ -9,8 +9,8 @@ template <Int mod>
 struct PrimeMod {
   Int num;
   static const constexpr Int m = mod;
-  static const Int gen_exp, gen_time, // mod = 2**gen_exp * gen_time + 1
-    gen; // gen^(2^(gen_exp - 1)) != 1 but gen^(2^(gen_exp)) = 1
+  static const Int gen_exp, gen_time; // mod = 2**gen_exp * gen_time + 1
+  static const PrimeMod gen; // gen^(2^(gen_exp - 1)) != 1 but gen^(2^(gen_exp)) = 1
 
   PrimeMod(): PrimeMod(1) {}
   PrimeMod(Int n ) : num( ((n % mod) + mod ) % mod ){}
@@ -55,7 +55,7 @@ struct PrimeMod {
       if (n & 1) {
 	result = result * base % mod;
       }
-      n /= 1;
+      n /= 2;
       base = base * base % mod;
     }
     return PrimeMod(result);
@@ -69,14 +69,8 @@ struct PrimeMod {
   }
 };
 
-// Field operations for Prime Modular 2^expon * time + 1
-typedef PrimeMod<167772161LL> Mod25; // 2^25 * 5 + 1
-
-template<> const Int Mod25::gen = 17;
-template<> const Int Mod25::gen_exp = 25;
-template<> const Int Mod25::gen_time = 5;
-
-std::ostream& operator<<(std::ostream& s, Mod25 n) {
+template<Int mod>
+std::ostream& operator<<(std::ostream& s, PrimeMod<mod> n) {
   return s<<"["<<n.num<<"]";
 }
 

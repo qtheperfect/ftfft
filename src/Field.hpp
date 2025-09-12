@@ -12,9 +12,11 @@ template <typename F>
 class Field {
   friend class FT<F>;
   friend class FFT<F>;
+public:
   const static F zero;
   const static F one;
-public:
+  const static Int Len_Limit;
+
   static F get_phi(Int len); 
   static F lenSqrt(Int len); 
   static void testField() {

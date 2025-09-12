@@ -55,7 +55,7 @@ public:
     using namespace std;
 
     printf("Hello, fft\n");
-    cout<<" Length Limit: "<<IntMax<<endl;
+    cout<<" Length Limit: "<<Field<F>::Len_Limit<<endl;
 
     FT<F> xs(testInput);
     FFT<F> xsf(testInput);

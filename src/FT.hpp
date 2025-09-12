@@ -14,11 +14,11 @@ public:
   const F zero = Field<F>::zero;
   const F one = Field<F>::one;
   F phi;
-  Int lenExp = 0;
+  Int lenExp = 3;
   Int len = get_len(lenExp);
-  std::vector<F> xs = std::vector<F>(len);
+  std::vector<F> xs = std::vector<F>(len, one);
 
-  FT(Int lenExp): lenExp(lenExp) {}
+  FT(Int lenExp): lenExp(lenExp) { }
   FT(std::vector<F> xs) {
     set_xs(xs);
   }
@@ -26,6 +26,7 @@ public:
   // Length of input xs should be a power of 2 
   void set_xs(std::vector<F> &_xs) {
     xs = _xs;
+    
     for (lenExp = 0, len = 1; len < xs.size(); len <<= 1 && ++lenExp) {
       assert(lenExp < IntMaxExponent);
     }
