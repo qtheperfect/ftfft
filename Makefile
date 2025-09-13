@@ -13,3 +13,8 @@ debug/complex.exe: debug/complex.o
 debug/modular.exe: debug/modular.o
 	g++ -o debug/modular.exe debug/modular.o # && rm -v debug/modular.o
 
+run-mod:
+	debug/modular.exe;
+
+run-comp:
+	debug/complex.exe;

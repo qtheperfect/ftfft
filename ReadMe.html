@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-09-12 五 16:20 -->
+<!-- 2025-09-13 六 22:10 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FT and FFT Algorithms on Various Number Fields</title>
@@ -233,121 +233,134 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgee9f2f0">1. Introduction:</a></li>
-<li><a href="#org0067a6d">2. About the FFT</a>
+<li><a href="#orgc3ddee6">1. Introduction:</a></li>
+<li><a href="#org936e322">2. About the FFT</a>
 <ul>
-<li><a href="#org65f5622">2.1. Presumptions:</a></li>
-<li><a href="#org56ef696">2.2. The FFT Steps:</a></li>
+<li><a href="#orgb3798e5">2.1. Presumptions:</a></li>
+<li><a href="#org6ec9f90">2.2. The FFT Steps:</a></li>
 </ul>
 </li>
-<li><a href="#orgeaa505f">3. About the fields</a>
+<li><a href="#org68ffa29">3. About the fields</a>
 <ul>
-<li><a href="#org7509a16">3.1. Fields in the code</a></li>
-<li><a href="#org2000a68">3.2. Field properties as C++ template singleton classes</a></li>
+<li><a href="#org0e8e41b">3.1. Fields contained in the program:</a></li>
+<li><a href="#org5220620">3.2. Field properties coded in the C++ template singletons</a></li>
 </ul>
 </li>
-<li><a href="#orgdc996a6">4. Author and Copyright</a></li>
+<li><a href="#orgd069505">4. About</a></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgee9f2f0" class="outline-2">
-<h2 id="orgee9f2f0"><span class="section-number-2">1.</span> Introduction:</h2>
+<div id="outline-container-orgc3ddee6" class="outline-2">
+<h2 id="orgc3ddee6"><span class="section-number-2">1.</span> Introduction:</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-A C++ project for the illustration of the Fourier Transformations(FT) and Fast Fourier Transformations(FFT) on different number fields, with the inverse transformations presented, primarily on the complex-number and prime-modular fields.
+A C++ project to illustrate the Fourier Transforms(FT) and the Fast Fourier Transforms(FFT),
+participated with the inverse transforms,
+primarily on such common numeric fields as complex and prime-modular fields.
 </p>
 </div>
 </div>
-<div id="outline-container-org0067a6d" class="outline-2">
-<h2 id="org0067a6d"><span class="section-number-2">2.</span> About the FFT</h2>
+<div id="outline-container-org936e322" class="outline-2">
+<h2 id="org936e322"><span class="section-number-2">2.</span> About the FFT</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org65f5622" class="outline-3">
-<h3 id="org65f5622"><span class="section-number-3">2.1.</span> Presumptions:</h3>
+<div id="outline-container-orgb3798e5" class="outline-3">
+<h3 id="orgb3798e5"><span class="section-number-3">2.1.</span> Presumptions:</h3>
 <div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
 <li>Inputs: \( x = x(0), x(1) ... x(N - 1) \) <b>where \( N = 2^n \)</b></li>
 <li>Outputs: \( y = y(0), y(1) ... y(N - 1) \)</li>
 <li>The cyclic generator of order	\( N \): \( \phi: \phi^N = 1 \) where in the complex field: \( \phi = \exp(-2\pi i / N) \). Since <b>in any field</b>: \[ 0 = \phi^N - 1 = (\phi^{\frac{N}{2}} + 1)(\phi^{\frac{N}{2}} - 1) \] which proves that <span class="underline">\( \phi^{\frac{N}{2}} = -1 \)</span></li>
-<li>Formula:
-\[ y = \Phi x \]
-i.e.
+<li>Formula of the FT:
+\[ y = \Phi x \], i.e.
 \[ y(s) = \sum_t \phi^{st} x(t) \]</li>
+<li>The inverse FT:
+Note that the inverse transform matrice has a succint similar form:
+\[ x = \Phi^{-1}y \], i.e.
+\[ x(t) = \frac{1}{N} \sum_t ({\phi}^{-1})^{st} y(t) \].
+So the fast forward Fourior transform also applies to the inverse transform.</li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org56ef696" class="outline-3">
-<h3 id="org56ef696"><span class="section-number-3">2.2.</span> The FFT Steps:</h3>
+<div id="outline-container-org6ec9f90" class="outline-3">
+<h3 id="org6ec9f90"><span class="section-number-3">2.2.</span> The FFT Steps:</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
-The original Fourier transformation for the input \( x \) can be <span class="underline">split into the sum of the even and odd items</span>:
+The original Fourier transform for the input \( x \) can be <span class="underline">split into the sum of the even and odd items</span>:
 \[ y(s) = \sum_{\tau} \phi^{2\tau \cdot s}x(2\tau)  + \sum_{\tau} \phi^{(2\tau + 1) \cdot s} x(2\tau + 1)\]
 </p>
 
 <p>
-When \( N \) is even, \( (\phi^2)^{N/2} = 1 \). Assume that the partial Fourier Transformation of all the <b>even</b> items are calculated with the cyclic generator \( \phi^2 \):
+When \( N \) is even, \( (\phi^2)^{N/2} = 1 \).
+All the <b>even</b> items can make a partial Fourior transform (\( y_0 \)), and the cyclic generator is \( \phi^2 \):
 \[ y_0(s) = \sum_{\tau} \phi^{2\tau \cdot s} x(2\tau) \]
 </p>
 
 <p>
-Likewisely, assume that the Fourier Transform of all the <b>odd</b> items are calculated with the cyclic generator \( \phi^2 \):
+Likewisely, all the <b>odd</b> items makes a partial transform with the cyclic generator \( \phi^2 \):
 \[ y_1(s) = \sum_{\tau} \phi^{2\tau \cdot s} x(2\tau + 1)\]
 </p>
 
 <p>
-Then, when \( N \) is even, for any \( s < N/2 \):
+Then, when \( N \) is even, after the above two partial transforms already done, for any \( s < N/2 \):
 \[ y(s) = y_0(s) + \phi^s y_1(s) \]
 \[ y(s + \frac{N}{2}) = y_0(s) - \phi^s y_1(s)  \]
 </p>
 
 <p>
-The consumption for the items of \( y \) is \( O(N) \) <span class="underline">rather than \( O(N^2) \)</span>.
+The complexity for the calculation of \( y \) is \( O(N) \) <span class="underline">rather than \( O(N^2) \)</span>.
 </p>
 
 <p>
-The partial transformations \( y_0(s) \) and \( y_1(s) \) can be calculated recursively in further steps, given that <span class="underline">\( N/2 \) is still even</span> before reaching \( 1 \).
+The partial transforms \( y_0(s) \) and \( y_1(s) \) can be calculated recursively in further steps, given that <span class="underline">\( N/2 \) is still even</span> before reaching \( 1 \).
 </p>
 
 <p>
-Totally \( O(\log_2 N) \) recursive steps are required to get the final transformation, so the total calculation is \( N\log_2N \), which still prevails \( O(N^2) \)
+The next recursive step returns \( y_0 \) and \( y_1 \), soj still should compute \( \frac{N}{2} + \frac{N}{2} = N \) items in total, so should all the further recursions.
+</p>
+
+
+<p>
+Totally \( O(\log_2 N) \) recursive steps are required to get the final transform, so the total calculation is \( N\log_2N \), which still prevails \( O(N^2) \)
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgeaa505f" class="outline-2">
-<h2 id="orgeaa505f"><span class="section-number-2">3.</span> About the fields</h2>
+<div id="outline-container-org68ffa29" class="outline-2">
+<h2 id="org68ffa29"><span class="section-number-2">3.</span> About the fields</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org7509a16" class="outline-3">
-<h3 id="org7509a16"><span class="section-number-3">3.1.</span> Fields in the code</h3>
+<div id="outline-container-org0e8e41b" class="outline-3">
+<h3 id="org0e8e41b"><span class="section-number-3">3.1.</span> Fields contained in the program:</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li>Complex field: The cyclic generator is \( \phi = \exp(-2\pi i / N) \).</li>
-<li>Prime Modular Field: When \( p \) is prime, its modular finite Field is of size \( p - 1 \).
-If \( p = q \cdot 2^k + 1 \), the field will have a cyclic sub-group of size \( 2^k \).</li>
+<li>Prime Modular Field: When \( p \) is prime, its modular field is finite and of size \( p - 1 \).
+If \( p = q \cdot 2^k + 1 \), the field will have a cyclic sub-group of size \( 2^k \).
+We set \( p = 5 \cdot 2^{25} + 1 \), for which \( 17 \) is a cyclic generator of order \( 2^{15} \).</li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org2000a68" class="outline-3">
-<h3 id="org2000a68"><span class="section-number-3">3.2.</span> Field properties as C++ template singleton classes</h3>
+<div id="outline-container-org5220620" class="outline-3">
+<h3 id="org5220620"><span class="section-number-3">3.2.</span> Field properties coded in the C++ template singletons</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 Assuming that the field is presented by the C++ datatype <code>F</code>, The <code>Field&lt;F&gt;</code> privides basic field properties:
 </p>
 <div class="org-src-container">
-<pre class="src src-C++"><span style="color: #ffffff;">static</span> <span style="color: #7fffd4;">F</span> <span style="color: #40e0d0;">Field</span>&lt;<span style="color: #7fffd4;">F</span>&gt;::<span style="color: #9acd32;">one</span>;  <span style="color: #00cd66;">// </span><span style="color: #00cd66;">1+0i for complex field.
-</span><span style="color: #ffffff;">static</span> <span style="color: #7fffd4;">F</span> <span style="color: #40e0d0;">Field</span>&lt;<span style="color: #7fffd4;">F</span>&gt;::<span style="color: #9acd32;">zero</span>; <span style="color: #00cd66;">// </span><span style="color: #00cd66;">0+0i for complex field.
+<pre class="src src-C++"><span style="color: #ffffff;">static</span> <span style="color: #7fffd4;">F</span> <span style="color: #40e0d0;">Field</span>&lt;<span style="color: #7fffd4;">F</span>&gt;::<span style="color: #9acd32;">one</span>;  <span style="color: #00cd66;">// </span><span style="color: #00cd66;">1+0i, if F is complex field.
+</span><span style="color: #ffffff;">static</span> <span style="color: #7fffd4;">F</span> <span style="color: #40e0d0;">Field</span>&lt;<span style="color: #7fffd4;">F</span>&gt;::<span style="color: #9acd32;">zero</span>; <span style="color: #00cd66;">// </span><span style="color: #00cd66;">0+0i, if F is complex field.
 </span>
- <span style="color: #00cd66;">// </span><span style="color: #00cd66;">Returns the len-order cyclic generator. len should be a power of 2 
-</span><span style="color: #7fffd4;">F</span> <span style="color: #40e0d0;">Field</span>&lt;<span style="color: #7fffd4;">F</span>&gt;::<span style="color: #98fb98;">get_phi</span>(<span style="color: #7fffd4;">Int</span> <span style="color: #9acd32;">len</span>); 
+ <span style="color: #00cd66;">// </span><span style="color: #00cd66;">Returns the len-th-order cyclic generator. len should be a power of 2 
+</span><span style="color: #ffffff;">static</span> <span style="color: #7fffd4;">F</span> <span style="color: #40e0d0;">Field</span>&lt;<span style="color: #7fffd4;">F</span>&gt;::<span style="color: #98fb98;">get_phi</span>(<span style="color: #7fffd4;">Int</span> <span style="color: #9acd32;">len</span>); 
 </pre>
 </div>
 <p>
-The data <code>F</code> should be applicated with <code>operators +, -, *, /, ostream&lt;&lt;</code>
+The data <code>F</code> should be applicated with operators: <code>+, -, *, /, ostream&lt;&lt;</code>
 </p>
 
 <p>
-Transformation classes, i/o-puts, test data and functions:
+Transform classes, i/o-puts, test data and functions:
 </p>
 
 <div class="org-src-container">
@@ -358,10 +371,10 @@ Transformation classes, i/o-puts, test data and functions:
 </span>};
 
 <span style="color: #ffffff;">class</span> <span style="color: #7fffd4;">FFT</span>&lt;<span style="color: #7fffd4;">F</span>&gt; : <span style="color: #ffffff;">public</span> <span style="color: #7fffd4;">FT</span>&lt;<span style="color: #7fffd4;">F</span>&gt; { <span style="color: #00cd66;">// </span><span style="color: #00cd66;">Fast FT
-</span>  <span style="color: #ffffff;">override</span> <span style="color: #7fffd4;">void</span> trans();
-  <span style="color: #00cd66;">// </span><span style="color: #00cd66;">which requires the recursive function below, 
-</span>  <span style="color: #00cd66;">// </span><span style="color: #00cd66;">getting the partial sum of input xs from `start` by `step` of length `length`, transformed with parameter `phiPow`.
-</span>  <span style="color: #00cd66;">// </span><span style="color: #00cd66;">Before writing the result to `result`, the outcome of further recursions should be written to `cache` first. 
+</span>  <span style="color: #7fffd4;">void</span> <span style="color: #98fb98;">trans</span>(); <span style="color: #00cd66;">// </span><span style="color: #00cd66;">overrides FT::trans
+</span>  <span style="color: #00cd66;">// </span><span style="color: #00cd66;">which requires the recursive function below, 
+</span>  <span style="color: #00cd66;">// </span><span style="color: #00cd66;">getting the partial sum of input xs from `start` by `step` to some `length`, transformed with the Fourier parameter `phiPow`.
+</span>  <span style="color: #00cd66;">// </span><span style="color: #00cd66;">Before writing the result to `result`, the outcome of further recursions are restored in `cache` first. 
 </span>  <span style="color: #ffffff;">static</span> <span style="color: #7fffd4;">void</span> <span style="color: #98fb98;">branchSum</span>(<span style="color: #7fffd4;">F</span>* <span style="color: #9acd32;">start</span>, <span style="color: #7fffd4;">Int</span> <span style="color: #9acd32;">step</span>, <span style="color: #7fffd4;">Int</span> <span style="color: #9acd32;">length</span>, <span style="color: #7fffd4;">F</span> <span style="color: #9acd32;">phiPow</span>, <span style="color: #7fffd4;">F</span>* <span style="color: #9acd32;">result</span>, <span style="color: #7fffd4;">F</span>* <span style="color: #9acd32;">cache</span>);
   <span style="color: #ffffff;">static</span> <span style="color: #7fffd4;">vector</span>&lt;<span style="color: #7fffd4;">F</span>&gt; <span style="color: #9acd32;">testInput</span>; <span style="color: #00cd66;">// </span><span style="color: #00cd66;">Input used by the test()
 </span>  <span style="color: #ffffff;">static</span> <span style="color: #7fffd4;">void</span> <span style="color: #98fb98;">test</span>();
@@ -371,8 +384,8 @@ Transformation classes, i/o-puts, test data and functions:
 </div>
 </div>
 </div>
-<div id="outline-container-orgdc996a6" class="outline-2">
-<h2 id="orgdc996a6"><span class="section-number-2">4.</span> Author and Copyright</h2>
+<div id="outline-container-orgd069505" class="outline-2">
+<h2 id="orgd069505"><span class="section-number-2">4.</span> About</h2>
 <div class="outline-text-2" id="text-4">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -386,6 +399,11 @@ Transformation classes, i/o-puts, test data and functions:
 <tr>
 <td class="org-left">Author</td>
 <td class="org-left">Linghuei Guo</td>
+</tr>
+
+<tr>
+<td class="org-left">Affiliation</td>
+<td class="org-left">Scl. of A.I. Henan Univ.</td>
 </tr>
 
 <tr>
