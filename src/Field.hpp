@@ -18,7 +18,20 @@ public:
   const static Int Len_Limit;
 
   static F get_phi(Int len); 
-  static F lenSqrt(Int len); 
+  static F lenSqrt(Int len);
+
+  static F one2n(Int n) {
+    F base = one, result = zero;
+    while (n) {
+      if (n % 2 == 1) {
+	result = result + base;
+      }
+      n /= 2;
+      base = base + base;
+    }
+    return result;
+  }
+
   static void testField() {
     using namespace std;
     Int len = 16;

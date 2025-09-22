@@ -13,8 +13,9 @@ public:
   using FT<F>::print;
 
   FFT(int lenExp): FT<F>(lenExp){}
-  FFT(std::vector<F> xs): FT<F>(xs){};
-  FFT(const FT<F>& ft): FFT(ft.xs){};
+  FFT(std::vector<F> xs) : FT<F>(xs) {}
+  FFT(const FT<F>& ft): FFT(ft.xs){}
+
   static void branchSum(F* start, Int step, Int length, F phiPow, F* result, F* cache) {
     if (length == 1) {
       *result = *start;
@@ -39,7 +40,7 @@ public:
     using namespace std;
 
     F source[len], result[len], cache[len];
-    F denom = rev ? len : Field<F>::one;
+    F denom = rev ? Field<F>::one2n(len) : Field<F>::one;
     copy(xs.begin(), xs.end(), source);
     F phi = rev? Field<F>::one / this->phi : this->phi;
     branchSum(source, 1, len, phi, result, cache);

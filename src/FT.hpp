@@ -10,6 +10,7 @@
 // Plain Fourier Transformation without Fast Optimizations:
 template<typename F>
 class FT {
+  bool extend_with_zeros = 1;
 public:
   const F zero = Field<F>::zero;
   const F one = Field<F>::one;
@@ -19,14 +20,23 @@ public:
   std::vector<F> xs = std::vector<F>(len, one);
 
   FT(Int lenExp): lenExp(lenExp) { }
-  FT(std::vector<F> xs) {
+  FT(std::vector<F> xs, bool extend2n): extend_with_zeros(extend2n) {
     set_xs(xs);
+    if (extend_with_zeros) {
+      extend_xs();
+    }
+  }
+  FT(std::vector<F> xs ): FT(xs, true) {
+  }
+
+  void set_xs(std::vector<F> &_xs) {
+    xs = _xs;
+    len = xs.size();
+    phi = Field<F>::get_phi(len);
   }
 
   // Length of input xs should be a power of 2 
-  void set_xs(std::vector<F> &_xs) {
-    xs = _xs;
-    
+  void extend_xs() {
     for (lenExp = 0, len = 1; len < xs.size(); len <<= 1 && ++lenExp) {
       assert(lenExp < IntMaxExponent);
     }
@@ -48,7 +58,7 @@ public:
   virtual std::vector<F> trans(bool rev = false) const {
     using namespace std;
     F phi_s = one;
-    F denum = rev ? len : one;
+    F denum = rev ? Field<F>::one2n(len) : one;
     vector<F> result;
     for (Int s = 0; s < len; ++s) {
       F sum = zero;
