@@ -7,6 +7,7 @@ template <typename F>
 class FFT : public FT<F> {
 public:
   using FT<F>::xs;
+  using FT<F>::ys;
   using FT<F>::len;
   using FT<F>::phi;
   using FT<F>::lenExp;
@@ -36,7 +37,7 @@ public:
       }
     }
   }
-  std::vector<F> trans(bool rev = false) const {
+  std::vector<F> trans(bool rev = false) {
     using namespace std;
 
     F source[len], result[len], cache[len];
@@ -44,11 +45,12 @@ public:
     copy(xs.begin(), xs.end(), source);
     F phi = rev? Field<F>::one / this->phi : this->phi;
     branchSum(source, 1, len, phi, result, cache);
-    std::vector<F> outcome(len);
+
+    ys.clear();
     for (Int t = 0; t < len; ++t) {
-      outcome[t] = (result[t] / denom);
+      ys.push_back(result[t] / denom);
     }
-    return outcome;
+    return ys;
   }
 
   static std::vector<F> testInput;

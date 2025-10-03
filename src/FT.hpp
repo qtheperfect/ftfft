@@ -18,22 +18,28 @@ public:
   Int lenExp = 3;
   Int len = get_len(lenExp);
   std::vector<F> xs = std::vector<F>(len, one);
+  std::vector<F> ys;
 
   FT(Int lenExp): lenExp(lenExp) { }
   FT(std::vector<F> xs, bool extend2n): extend_with_zeros(extend2n) {
     set_xs(xs);
-    if (extend_with_zeros) {
-      extend_xs();
-    }
   }
   FT(std::vector<F> xs ): FT(xs, true) {
   }
 
   void set_xs(std::vector<F> &_xs) {
     xs = _xs;
-    len = xs.size();
-    phi = Field<F>::get_phi(len);
+    if (extend_with_zeros) {
+      extend_xs();
+    }
+    else {
+      len = xs.size();
+      phi = Field<F>::get_phi(len);
+    }
+    ys.clear();
   }
+
+  
 
   // Length of input xs should be a power of 2 
   void extend_xs() {
@@ -55,11 +61,11 @@ public:
     cout<<endl;
   }
 
-  virtual std::vector<F> trans(bool rev = false) const {
+  virtual std::vector<F> trans(bool rev = false) {
     using namespace std;
     F phi_s = one;
     F denum = rev ? Field<F>::one2n(len) : one;
-    vector<F> result;
+    vector<F>& result = ys;
     for (Int s = 0; s < len; ++s) {
       F sum = zero;
       F phi_st = one;
